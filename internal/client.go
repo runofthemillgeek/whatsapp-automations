@@ -9,6 +9,7 @@ import (
 	"strconv"
 	"time"
 
+	waautoresponder "git.sangeeth.dev/wa-autoresponder"
 	"github.com/mdp/qrterminal"
 	"go.mau.fi/whatsmeow"
 	"go.mau.fi/whatsmeow/proto/waE2E"
@@ -26,12 +27,6 @@ type Client struct {
 }
 
 func NewClient(waClient *whatsmeow.Client) *Client {
-	autoResponderMessageBytes, err := os.ReadFile("message.md")
-
-	if err != nil {
-		panic(fmt.Errorf("error reading message.md: %w", err))
-	}
-
 	autoResponseTimeMap := map[string]string{}
 
 	fileInfo, _ := os.Stat(autoResponseTimeMapJsonFileName)
@@ -56,7 +51,7 @@ func NewClient(waClient *whatsmeow.Client) *Client {
 
 	return &Client{
 		WAClient:            waClient,
-		message:             string(autoResponderMessageBytes),
+		message:             waautoresponder.AutoResponderMessage,
 		autoResponseTimeMap: autoResponseTimeMap,
 	}
 }

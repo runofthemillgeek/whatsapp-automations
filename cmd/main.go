@@ -5,41 +5,21 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 
 	"go.mau.fi/whatsmeow"
 	"go.mau.fi/whatsmeow/store/sqlstore"
 	"go.mau.fi/whatsmeow/types"
 	waLog "go.mau.fi/whatsmeow/util/log"
 
+	waautoresponder "git.sangeeth.dev/wa-autoresponder"
 	"git.sangeeth.dev/wa-autoresponder/internal"
 
 	_ "github.com/mattn/go-sqlite3"
 )
 
-var lastResponseTimeMap map[string]string = map[string]string{}
-
-func areSameDay(t1, t2 time.Time) bool {
-	y1, m1, d1 := t1.Date()
-	y2, m2, d2 := t2.Date()
-
-	return y1 == y2 && m1 == m2 && d1 == d2
-}
-
 func main() {
-	// |------------------------------------------------------------------------------------------------------|
-	// | NOTE: You must also import the appropriate DB connector, e.g. github.com/mattn/go-sqlite3 for SQLite |
-	// |------------------------------------------------------------------------------------------------------|
-	autoResponderMessageBytes, err := os.ReadFile("message.md")
-
-	if err != nil {
-		panic(fmt.Errorf("error reading message.md: %w", err))
-	}
-
-	autoResponderMessage := string(autoResponderMessageBytes)
-
 	fmt.Println("Auto responder message body:")
-	fmt.Println(autoResponderMessage)
+	fmt.Println(waautoresponder.AutoResponderMessage)
 
 	dbLog := waLog.Stdout("Database", "DEBUG", true)
 	container, err := sqlstore.New("sqlite3", "file:whatsapp.db?_foreign_keys=on", dbLog)
