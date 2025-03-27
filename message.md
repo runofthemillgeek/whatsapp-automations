@@ -1,0 +1,3 @@
+Due to increasing privacy and security concerns around WhatsApp, I will not be preferring to respond to DMs here anymore (unless urgent and non-sensitive). Please switch to Signal to chat with me. I highly recommend doing the same for all your personal communications. You can find me by searching for my number or visiting https://sng.lt/signal
+
+I've penned my reasons and thoughts around the same here, which I highly recommend reading: https://sng.lt/prefer-signal
