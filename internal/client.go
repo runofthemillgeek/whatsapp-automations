@@ -136,9 +136,12 @@ func (client *Client) eventHandler(evt interface{}) {
 			return
 		}
 
-		chatUserId := v.Info.Chat.User
+		// Ignore business chats
+		if v.Info.VerifiedName != nil {
+			return
+		}
 
-		// TODO: Ignore businesses
+		chatUserId := v.Info.Chat.User
 
 		if client.hasAutoRespondedWithinSameDay(chatUserId) {
 			fmt.Printf("Already responded to user %s, skipping\n", chatUserId)
