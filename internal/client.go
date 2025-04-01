@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math/rand/v2"
 	"os"
+	"slices"
 	"strconv"
 	"time"
 
@@ -19,23 +20,22 @@ import (
 )
 
 const autoResponseTimeMapJsonFileName = "auto-response-time-map.json"
+const allowlistFileName = "allowlist.json"
 
 type Client struct {
 	WAClient            *whatsmeow.Client
 	message             string
 	autoResponseTimeMap map[string]string
+	allowlist           []string
 }
 
 func NewClient(waClient *whatsmeow.Client) *Client {
 	autoResponseTimeMap := map[string]string{}
+	allowlist := []string{}
 
 	fileInfo, _ := os.Stat(autoResponseTimeMapJsonFileName)
 
 	if fileInfo != nil {
-		if fileInfo.IsDir() {
-			panic(fmt.Errorf("expected %s to be a file, but found dir", autoResponseTimeMapJsonFileName))
-		}
-
 		bytes, err := os.ReadFile(autoResponseTimeMapJsonFileName)
 
 		if err != nil {
@@ -49,10 +49,27 @@ func NewClient(waClient *whatsmeow.Client) *Client {
 		}
 	}
 
+	fileInfo, _ = os.Stat(allowlistFileName)
+
+	if fileInfo != nil {
+		bytes, err := os.ReadFile(allowlistFileName)
+
+		if err != nil {
+			panic(fmt.Errorf("error reading %s: %w", allowlistFileName, err))
+		}
+
+		err = json.Unmarshal(bytes, &allowlist)
+
+		if err != nil {
+			panic(err)
+		}
+	}
+
 	return &Client{
 		WAClient:            waClient,
 		message:             waautoresponder.AutoResponderMessage,
 		autoResponseTimeMap: autoResponseTimeMap,
+		allowlist:           allowlist,
 	}
 }
 
@@ -128,20 +145,22 @@ func (client *Client) updateAutoResponseTime(userId string) {
 func (client *Client) eventHandler(evt interface{}) {
 	switch v := evt.(type) {
 	case *events.Message:
-		if v.Info.IsGroup {
-			return
-		}
+		chatUserId := v.Info.Chat.User
 
 		if v.Info.IsFromMe {
 			return
 		}
 
-		// Ignore business chats
-		if v.Info.VerifiedName != nil {
-			return
-		}
+		if !slices.Contains(client.allowlist, chatUserId) {
+			if v.Info.IsGroup {
+				return
+			}
 
-		chatUserId := v.Info.Chat.User
+			// Ignore business chats
+			if v.Info.VerifiedName != nil {
+				return
+			}
+		}
 
 		if client.hasAutoRespondedWithinSameDay(chatUserId) {
 			fmt.Printf("Already responded to user %s, skipping\n", chatUserId)
