@@ -131,7 +131,7 @@ func (client *Client) hasAutoRespondedWithinSameDay(userId string) bool {
 func (client *Client) updateAutoResponseTime(userId string) {
 	client.autoResponseTimeMap[userId] = time.Now().Format(time.RFC3339)
 
-	bytes, err := json.Marshal(client.autoResponseTimeMap)
+	bytes, err := json.MarshalIndent(client.autoResponseTimeMap, "", "  ")
 
 	if err != nil {
 		panic(err)
@@ -173,13 +173,36 @@ func (client *Client) eventHandler(evt interface{}) {
 
 		time.Sleep(2 * time.Duration(rand.IntN(3)) * time.Second)
 
-		client.WAClient.SendMessage(
-			context.Background(),
-			v.Info.Chat,
-			&waE2E.Message{
-				Conversation: proto.String(client.message + "\n\nIgnore this random number: `" + strconv.FormatInt(time.Now().UnixMilli(), 10) + "`"),
-			},
-		)
+		msg := proto.String(client.message + "\n\nIgnore this random number: `" + strconv.FormatInt(time.Now().UnixMilli(), 10) + "`")
+
+		imageResp, err := client.WAClient.Upload(context.Background(), waautoresponder.Bernie, whatsmeow.MediaImage)
+
+		if err == nil {
+			client.WAClient.SendMessage(
+				context.Background(),
+				v.Info.Chat,
+				&waE2E.Message{
+					ImageMessage: &waE2E.ImageMessage{
+						Caption:  msg,
+						Mimetype: proto.String("image/jpeg"),
+
+						URL:           &imageResp.URL,
+						DirectPath:    &imageResp.DirectPath,
+						MediaKey:      imageResp.MediaKey,
+						FileEncSHA256: imageResp.FileEncSHA256,
+						FileSHA256:    imageResp.FileSHA256,
+						FileLength:    &imageResp.FileLength,
+					},
+				})
+		} else {
+			client.WAClient.SendMessage(
+				context.Background(),
+				v.Info.Chat,
+				&waE2E.Message{
+					Conversation: msg,
+				},
+			)
+		}
 
 		client.WAClient.SendChatPresence(v.Info.Chat, types.ChatPresencePaused, types.ChatPresenceMediaText)
 
