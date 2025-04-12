@@ -8,6 +8,8 @@ Currently has the following main functionalities:
 ## TODOs
 
 - [ ] Better project organization since this evolved beyond the signal thingy
+- [ ] Add systemd unit file to repo, update on deploys (if needed)
+- [ ] Remove hardcoded internal hostnames
 - [ ] Solar
     - [ ] Persist the collected metrics, load during init (incase of powercuts, could help)
     - [ ] Comparison with yesterday
