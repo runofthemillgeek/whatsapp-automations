@@ -167,6 +167,11 @@ func (client *Client) eventHandler(evt interface{}) {
 			return
 		}
 
+		if time.Now().Sub(v.Info.Timestamp).Minutes() >= 5 {
+			fmt.Printf("Message from %s older than 5 minutes, skipping\n", chatUserId)
+			return
+		}
+
 		time.Sleep(2 * time.Duration(rand.IntN(3)) * time.Second)
 
 		client.WAClient.SendChatPresence(v.Info.Chat, types.ChatPresenceComposing, types.ChatPresenceMediaText)
