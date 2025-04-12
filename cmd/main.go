@@ -53,7 +53,7 @@ func main() {
 
 	myCron := cron.New()
 	myCron.AddFunc("0 0 18 * * *", solar.CronSendDailyReport)
-	myCron.AddFunc("0 */15 * * * *", solar.CronCollectMetrics)
+	myCron.AddFunc("0 */15 5-19 * * *", solar.CronCollectMetrics)
 	myCron.Start()
 
 	// Listen to Ctrl+C (you can also do something else that prevents the program from exiting)
