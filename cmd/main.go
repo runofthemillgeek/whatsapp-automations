@@ -52,7 +52,8 @@ func main() {
 	solar := internal.NewSolar(client, deyeUser, deyePassword)
 
 	myCron := cron.New()
-	myCron.AddFunc("0 0 18 * * *", solar.SendDailyReport)
+	myCron.AddFunc("0 0 18 * * *", solar.CronSendDailyReport)
+	myCron.AddFunc("0 */15 * * * *", solar.CronCollectMetrics)
 	myCron.Start()
 
 	// Listen to Ctrl+C (you can also do something else that prevents the program from exiting)
