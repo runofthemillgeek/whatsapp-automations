@@ -2,7 +2,7 @@ start: install-deps
 	go run cmd/main.go
 
 install-deps:
-	go install ./...
+	go mod tidy
 
 build:
 	# CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build -o out/wa-autoresponder.linux-amd64 cmd/main.go
