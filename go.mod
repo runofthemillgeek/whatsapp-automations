@@ -2,7 +2,10 @@ module git.sangeeth.dev/wa-autoresponder
 
 go 1.24.1
 
-require go.mau.fi/whatsmeow v0.0.0-20250326122532-6680c9a6e9a7
+require (
+	github.com/robfig/cron v1.2.0
+	go.mau.fi/whatsmeow v0.0.0-20250326122532-6680c9a6e9a7
+)
 
 require rsc.io/qr v0.2.0 // indirect
 

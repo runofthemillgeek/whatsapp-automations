@@ -6,6 +6,7 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/robfig/cron"
 	"go.mau.fi/whatsmeow"
 	"go.mau.fi/whatsmeow/store/sqlstore"
 	"go.mau.fi/whatsmeow/types"
@@ -41,10 +42,24 @@ func main() {
 	client.Register()
 	client.Connect()
 
+	deyeUser := os.Getenv("DEYE_USER")
+	deyePassword := os.Getenv("DEYE_PASSWORD")
+
+	if deyeUser == "" || deyePassword == "" {
+		panic("Deye user/password must be provided")
+	}
+
+	solar := internal.NewSolar(client, deyeUser, deyePassword)
+
+	myCron := cron.New()
+	myCron.AddFunc("0 0 19 * * *", solar.SendDailyReport)
+	myCron.Start()
+
 	// Listen to Ctrl+C (you can also do something else that prevents the program from exiting)
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 	<-c
 
+	myCron.Stop()
 	client.Disconnect()
 }

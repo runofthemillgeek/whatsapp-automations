@@ -178,7 +178,7 @@ func (client *Client) eventHandler(evt interface{}) {
 
 		time.Sleep(2 * time.Duration(rand.IntN(3)) * time.Second)
 
-		msg := proto.String(client.message + "\n\nIgnore this random number: `" + strconv.FormatInt(time.Now().UnixMilli(), 10) + "`")
+		msg := proto.String(client.message + "\n\nIgnore this random number: `" + strconv.FormatInt(time.Now().Unix(), 10) + "`")
 
 		imageResp, err := client.WAClient.Upload(context.Background(), waautoresponder.Bernie, whatsmeow.MediaImage)
 
@@ -215,4 +215,27 @@ func (client *Client) eventHandler(evt interface{}) {
 
 		client.updateAutoResponseTime(chatUserId)
 	}
+}
+
+func (client *Client) SendTextMessage(chatId string, message string) {
+	chatJID, err := types.ParseJID(chatId)
+
+	if err != nil {
+		fmt.Println("Error parsing JID:", err)
+		return
+	}
+
+	time.Sleep(2 * time.Duration(rand.IntN(3)) * time.Second)
+	client.WAClient.SendChatPresence(chatJID, types.ChatPresenceComposing, types.ChatPresenceMediaText)
+	time.Sleep(2 * time.Duration(rand.IntN(3)) * time.Second)
+
+	client.WAClient.SendMessage(
+		context.Background(),
+		chatJID,
+		&waE2E.Message{
+			Conversation: proto.String(message),
+		},
+	)
+
+	client.WAClient.SendChatPresence(chatJID, types.ChatPresencePaused, types.ChatPresenceMediaText)
 }

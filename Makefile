@@ -1,5 +1,5 @@
 start: install-deps
-	go run cmd/main.go
+	source .env && go run cmd/main.go
 
 install-deps:
 	go mod tidy

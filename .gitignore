@@ -93,7 +93,7 @@ Temporary Items
 
 # End of https://www.toptal.com/developers/gitignore/api/go,visualstudiocode,macos,linux
 
-## 
+##
 ##
 ## Custom
 ##
@@ -102,3 +102,4 @@ Temporary Items
 whatsapp.db
 auto-response-time-map.json
 out/
+.env
