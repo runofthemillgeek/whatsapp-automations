@@ -61,10 +61,10 @@ func (this *Solar) SendDailyReport() {
 	var todayFormatted = time.Now().Format("Monday, 2 Jan 2006")
 
 	message := fmt.Sprintf(
-		"*🔆 Solar Production Report, %s*\n\n"+
+		"*🔆 Solar Production Report — %s*\n\n"+
 			summary+
 			"\n\n"+
-			"Today: %.2f kWh\n"+
+			"*Today: %.2f kWh*\n"+
 			"Total: %.2f kWh\n\n"+
 			"`DO NOT CLICK: %d`",
 		todayFormatted,
