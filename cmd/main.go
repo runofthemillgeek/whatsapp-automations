@@ -52,7 +52,7 @@ func main() {
 	solar := internal.NewSolar(client, deyeUser, deyePassword)
 
 	myCron := cron.New()
-	myCron.AddFunc("0 0 18 * * *", solar.CronSendDailyReport)
+	myCron.AddFunc("0 5 19 * * *", solar.CronSendDailyReport)
 	myCron.AddFunc("0 */15 5-19 * * *", solar.CronCollectMetrics)
 	myCron.Start()
 
